@@ -25,7 +25,7 @@
 <div>
 	<div class="img-box" v-loading.body="loading" element-loading-text="拼命加载中">
 		<div class="img-list" v-for="item in tableData">
-		    <img :src="'http://ojnlldqnx.bkt.clouddn.com/' + item.url + '?imageMogr2/thumbnail/200x150'" width="200" height="150">
+		    <img @click="look(item.url)" :src="'http://ojnlldqnx.bkt.clouddn.com/' + item.url + '?imageMogr2/thumbnail/200x150'" width="200" height="150">
 		    <p class="time">上传时间：{{item.time}}</p>
 		    <el-button type="success" size="mini" @click="look(item.url)">预览</el-button>
 		    <el-button type="danger" size="mini" @click="dele(item.id, item.url)">删除</el-button>
@@ -35,13 +35,17 @@
 	<div style="padding: 20px;text-align: right;">
     	<el-pagination @current-change="handleCurrentChange" :current-page="page" :page-size="pageSize" layout="total, prev, pager, next" :total="total"></el-pagination>
     </div>
-</div>	
+    <el-dialog v-model="dialogVisible" size="tiny">
+	  <img width="100%" :src="dialogImageUrl" alt="">
+	</el-dialog>
+</div>
 </template>
 <script>
 export default{
 	data: function(){
 		return {
-			dialogVisible: false,
+			dialogImageUrl: '',
+        	dialogVisible: false,
 			loading: false,
 			tableData: [],
 			page: 1,
@@ -54,7 +58,8 @@ export default{
 	},
   	methods: {
   		look: function(url){
-  			window.open('http://ojnlldqnx.bkt.clouddn.com/' + url);
+  			this.dialogImageUrl = 'http://ojnlldqnx.bkt.clouddn.com/' + url;
+	        this.dialogVisible = true;
   		},
   		getList: function(){
 			this.loading = true;
@@ -95,5 +100,5 @@ export default{
 			this.getList();
 		},
   	}
-}	
+}
 </script>
