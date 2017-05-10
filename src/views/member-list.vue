@@ -4,17 +4,23 @@
 	<br>
 	<el-table border :data="tableData" v-loading.body="loading" element-loading-text="拼命加载中" style="width: 100%">
         <el-table-column prop="id" label="ID" width="50"></el-table-column>
-        <el-table-column label="编号" width="200">
+        <el-table-column label="编号" width="180">
         	<template scope="scope">
 		        <el-tag type='success' v-if="scope.row.number">{{scope.row.number}}</el-tag>
 		    </template>
         </el-table-column>
         <el-table-column prop="name" label="姓名" width="100"></el-table-column>
-        <el-table-column prop="sexName" label="性别" width="100"></el-table-column>
-        <el-table-column prop="age" label="年龄" width="100"></el-table-column>
-        <el-table-column prop="date" label="出生日期"></el-table-column>
-        <el-table-column prop="email" label="电子邮箱"></el-table-column>
-        <el-table-column prop="phone" label="手机号码" width="150"></el-table-column>
+        <el-table-column prop="sexName" label="性别" width="80"></el-table-column>
+        <el-table-column prop="age" label="年龄" width="80"></el-table-column>
+        <el-table-column prop="level" label="级别">
+            <template scope="scope">
+                <el-tag v-if="scope.row.level == 1" type="warning">初级认证</el-tag>
+                <el-tag v-if="scope.row.level == 2" type="primary">中级认证</el-tag>
+                <el-tag v-if="scope.row.level == 3" type="success">高级认证</el-tag>
+            </template>
+        </el-table-column>
+        <el-table-column prop="email" label="电子邮箱" width="200"></el-table-column>
+        <el-table-column prop="phone" label="手机号码" width="100"></el-table-column>
       	<el-table-column prop="status" width="100" label="状态" :filter-method="filter" :filters="[{ text: '待审核', value: 'REVIEW' }, { text: '已通过', value: 'ADOPTA' }, { text: '已拒绝', value: 'REFUSE' }]">
       		<template scope="scope">
 		        <el-tag v-if="scope.row.status === 'REVIEW'" type='warning' close-transition>{{scope.row.statusName}}</el-tag>

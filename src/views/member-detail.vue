@@ -55,7 +55,7 @@
 		<el-form-item label="级别" prop="level">
 			 <el-select v-model="info.level">
 			    <el-option value="1" label="初级认证"></el-option>
-			    <el-option value="2" label="医院认证"></el-option>
+			    <el-option value="2" label="中级认证"></el-option>
 			    <el-option value="3" label="高级认证"></el-option>
 			</el-select>
 		</el-form-item>
