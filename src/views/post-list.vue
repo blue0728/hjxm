@@ -5,14 +5,14 @@
 	<el-table border :data="tableData" v-loading.body="loading" element-loading-text="拼命加载中" style="width: 100%">
         <el-table-column prop="id" label="ID" width="100"></el-table-column>
         <el-table-column prop="title" label="标题"></el-table-column>
-        <el-table-column width="300" label="所属分类">
+        <el-table-column label="所属分类">
       		<template scope="scope">
         		<el-tag type="success" v-for="item in scope.row.typeTextArr">{{item}}</el-tag>
       		</template>
         </el-table-column>
         <el-table-column prop="author" width="100" label="更新人"></el-table-column>
         <el-table-column prop="time" width="200" label="更新时间"></el-table-column>
-        <el-table-column prop="source" width="200" label="文章来源"></el-table-column>
+        <el-table-column prop="source" label="文章来源"></el-table-column>
       	<!-- <el-table-column prop="times" width="100" label="阅读次数"></el-table-column> -->
       	<el-table-column width="100" label="状态">
       		<template scope="scope">
@@ -32,7 +32,7 @@
     <div style="padding: 20px;text-align: right;">
     	<el-pagination @current-change="handleCurrentChange" :current-page="page" :page-size="pageSize" layout="total, prev, pager, next" :total="total"></el-pagination>
     </div>
-</div>	
+</div>
 </template>
 <script>
 export default {
@@ -122,5 +122,5 @@ export default {
 			this.getList();
 		}
 	}
-}	
+}
 </script>

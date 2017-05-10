@@ -1,33 +1,3 @@
-<style>
-.el-form-item__content #content{
-	font-size: 14px;
-    line-height: 100%;
-}
-.thumbnail{
-	width: 100px;
-	height: 100px;
-	border: 1px solid #eee;
-	border-radius: 2px;
-	padding: 10px;
-	display: inline-block;
-	margin: 0 10px 10px 0;
-	text-align: center;
-	line-height: 100px;
-	position: relative;
-}	
-.thumbnail i.el-icon-circle-close{
-	position: absolute;
-	right: -5px;
-    top: -5px;
-    cursor: pointer;
-}
-.thumbnail img{
-	cursor: pointer;
-	display: block;
-	width: 100px;
-	height: 100px;
-}
-</style>
 <template>
 <div>
 	<h3>添加文章</h3>
@@ -47,16 +17,9 @@
 		    <el-input v-model="info.source" placeholder="请填写文章来源"></el-input>
 		</el-form-item>
 		<el-form-item label="封面图" prop="cover">
-			<div style="display: flex;">
-				<span class="thumbnail" v-for="(item, index) in info.fileList" :key="index">
-					<img :src="item.url + '?imageMogr2/thumbnail/100x100'" @click="look(item.url)">
-					<i class="el-icon-circle-close" @click="deleImg(item.name)" ></i>
-				</span>
-				<span v-if="uploading" class="thumbnail"><i class="el-icon-loading"></i>上传中...</span>
-			</div>
-		    <el-upload action="/api/pictures/upload" :before-upload="beforeUpload" :show-upload-list="showUploadList" :on-success="handlSuccess" :default-file-list="info.fileList">
-			  	<el-button size="small" type="primary">点击上传</el-button>
-			  	<div class="el-upload__tip" slot="tip">只能上传jpg/png/gif文件，且不超过8M</div>
+			<el-upload action="/api/pictures/upload" list-type="picture-card" :before-upload="beforeUpload" :on-preview="handlePictureCardPreview" :on-remove="handleRemove" :on-success="handlSuccess" :file-list="info.fileList">
+		    	<i class="el-icon-plus"></i>
+				<div class="el-upload__tip" slot="tip">只能上传jpg/png/gif文件，且不超过8M，只保留第一张图片</div>
 			</el-upload>
 		</el-form-item>
 		<el-form-item label="文章正文" prop="content">
@@ -72,7 +35,10 @@
 		    <el-button type="primary" @click="submit" :loading="loading">提交</el-button>
 		</el-form-item>
 	</el-form>
-</div>	
+	<el-dialog v-model="dialogVisible" size="tiny">
+	  <img width="100%" :src="dialogImageUrl" alt="">
+	</el-dialog>
+</div>
 </template>
 <script>
 export default{
@@ -80,7 +46,8 @@ export default{
 		return {
 			imagePrefix: 'http://ojnlldqnx.bkt.clouddn.com/',
 			uploading: false,
-			showUploadList: false,
+			dialogImageUrl: '',
+        	dialogVisible: false,
 			types: [],
 			typeid: [],
 			info: {
@@ -89,7 +56,7 @@ export default{
 				source: '',
 				status: 'ON',
 				fileList: [],
-				photos: ''
+				image: ''
 			},
 			loading: false,
 			rules: {
@@ -113,18 +80,19 @@ export default{
 		this.getTypes();
 	},
 	methods: {
-		look: function(url){
-  			window.open(url);
-  		},
-		deleImg: function(url){
+		handleRemove: function(file, fileList){
 			this.info.fileList = this.info.fileList.filter((item) => {
-				return item.name != url;
+				return item.name != file.name;
 			})
-			var arr = this.info.photos.split(',').filter((item) => {
-				return item != url
+			var arr = this.info.image.split(',').filter((item) => {
+				return item != file.name
 			})
-			this.info.photos = arr.join(',');
+			this.info.image = arr.join(',');
 		},
+		handlePictureCardPreview(file) {
+	        this.dialogImageUrl = file.url;
+	        this.dialogVisible = true;
+	     },
 		getTypes: function(){
 			this.$http.post('/api/types/list').then(function(res){
 				if(res.data.status == 'success'){
@@ -149,10 +117,10 @@ export default{
 	    handlSuccess: function(response, file, fileList){
 	    	this.uploading = false;
 	    	if(response.status == 'success'){
-	    		if(this.info.photos == ''){
-	    			this.info.photos = response.url;
+	    		if(this.info.image == ''){
+	    			this.info.image = response.url;
 	    		}else{
-	    			this.info.photos += ',' + response.url;
+	    			this.info.image += ',' + response.url;
 	    		}
 	    		this.info.fileList.push({
 	    			name: response.url,
@@ -176,7 +144,7 @@ export default{
 				source: this.info.source,
 				//author: this.info.author,
 				status: this.info.status,
-				cover: this.info.photos,
+				cover: this.info.image.split(',')[0],
 				typeid: this.typeid.join(',')
 			}).then(function(res){
 				this.loading = false;
@@ -193,5 +161,5 @@ export default{
 			})
 		}
 	}
-}	
+}
 </script>

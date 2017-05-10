@@ -1,29 +1,3 @@
-<style>
-.thumbnail{
-	width: 100px;
-	height: 100px;
-	border: 1px solid #eee;
-	border-radius: 2px;
-	padding: 10px;
-	display: inline-block;
-	margin: 0 10px 10px 0;
-	text-align: center;
-	line-height: 100px;
-	position: relative;
-}	
-.thumbnail i.el-icon-circle-close{
-	position: absolute;
-	right: -5px;
-    top: -5px;
-    cursor: pointer;
-}
-.thumbnail img{
-	cursor: pointer;
-	display: block;
-	width: 100px;
-	height: 100px;
-}
-</style>
 <template>
 <div>
 	<h3>编辑轮播图</h3>
@@ -34,30 +8,26 @@
 		<el-form-item label="链接地址" prop="url">
 		    <el-input v-model="info.url" placeholder="请填写链接地址"></el-input>
 		</el-form-item>
-		<el-form-item label="照片" prop="image">
-			<div style="display: flex;">
-				<span class="thumbnail" v-for="(item, index) in info.fileList" :key="index">
-					<img :src="item.url + '?imageMogr2/thumbnail/100x100'"  @click="look(item.url)">
-					<i class="el-icon-circle-close" @click="deleImg(item.name)"></i>
-				</span>
-				<span v-if="uploading" class="thumbnail"><i class="el-icon-loading"></i>上传中...</span>
-			</div>
-		    <el-upload action="/api/pictures/upload" :before-upload="beforeUpload" :show-upload-list="showUploadList" :on-success="handlSuccess" :default-file-list="info.fileList">
-			  	<el-button size="small" type="primary">点击上传</el-button>
-			  	<div class="el-upload__tip" slot="tip">只能上传jpg/png/gif文件，且不超过8M，只保留第一张图片</div>
+		<el-form-item label="图片" prop="image">
+			<el-upload action="/api/pictures/upload" list-type="picture-card" :before-upload="beforeUpload" :on-preview="handlePictureCardPreview" :on-remove="handleRemove" :on-success="handlSuccess" :file-list="info.fileList">
+		    	<i class="el-icon-plus"></i>
+				<div class="el-upload__tip" slot="tip">只能上传jpg/png/gif文件，且不超过8M，只保留第一张图片</div>
 			</el-upload>
 		</el-form-item>
 		<el-form-item label="状态" prop="status">
 			 <el-select v-model="info.status">
-			    <el-option value="OFF" label="上线"></el-option>
-			    <el-option value="ON" label="下线"></el-option>
+			    <el-option value="ON" label="上线"></el-option>
+			    <el-option value="OFF" label="下线"></el-option>
 			</el-select>
 		</el-form-item>
 		<el-form-item>
 		    <el-button type="primary" @click="submit" :loading="loading">提交</el-button>
 		</el-form-item>
 	</el-form>
-</div>	
+	<el-dialog v-model="dialogVisible" size="tiny">
+	  <img width="100%" :src="dialogImageUrl" alt="">
+	</el-dialog>
+</div>
 </template>
 <script>
 export default{
@@ -68,6 +38,8 @@ export default{
 			showUploadList: false,
 			loading: false,
 			info: null,
+			dialogImageUrl: '',
+        	dialogVisible: false,
 			rules: {
 				name: [
 					 { required: true, message: '请输入标题', trigger: 'blur' }
@@ -90,31 +62,32 @@ export default{
 		}).then(function(res){
 			if(res.data.status == 'success'){
 				res.data.data.fileList = [{
-					name: res.data.data.image, 
+					name: res.data.data.image,
 					url: this.imagePrefix + res.data.data.image
 				}];
-				this.info = res.data.data				
+				this.info = res.data.data
 			}else{
 				this.$message.error(res.data.msg);
 			}
 		})
 	},
 	methods: {
-		look: function(url){
-  			window.open(url);
-  		},
-		deleImg: function(url){
-			this.info.fileList = this.info.fileList.filter((item) => {
-				return item.name != url;
-			})
-			var arr = this.info.image.split(',').filter((item) => {
-				return item != url
-			})
-			this.info.image = arr.join(',');
-		},
 		beforeUpload: function(){
 			this.uploading = true;
 		},
+		handleRemove(file, fileList) {
+			this.info.fileList = this.info.fileList.filter((item) => {
+				return item.name != file.name;
+			})
+			var arr = this.info.image.split(',').filter((item) => {
+				return item != file.name
+			})
+			this.info.image = arr.join(',');
+	    },
+		handlePictureCardPreview(file) {
+	        this.dialogImageUrl = file.url;
+	        this.dialogVisible = true;
+	     },
 	    handlSuccess: function(response, file, fileList){
 	    	this.uploading = false;
 	    	if(response.status == 'success'){
@@ -175,5 +148,5 @@ export default{
 			})
 		}
 	}
-}	
+}
 </script>

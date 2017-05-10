@@ -1,29 +1,3 @@
-<style>
-.thumbnail{
-	width: 100px;
-	height: 100px;
-	border: 1px solid #eee;
-	border-radius: 2px;
-	padding: 10px;
-	display: inline-block;
-	margin: 0 10px 10px 0;
-	text-align: center;
-	line-height: 100px;
-	position: relative;
-}	
-.thumbnail i.el-icon-circle-close{
-	position: absolute;
-	right: -5px;
-    top: -5px;
-    cursor: pointer;
-}
-.thumbnail img{
-	cursor: pointer;
-	display: block;
-	width: 100px;
-	height: 100px;
-}
-</style>
 <template>
 <div>
 	<h3>编辑纹绣师</h3>
@@ -38,7 +12,7 @@
 			</el-select>
 		</el-form-item>
 		<el-form-item label="年龄" prop="age">
-		    <el-input v-model="info.age" placeholder="请填写年龄"></el-input>
+		    <el-input-number v-model="info.age" placeholder="请填写年龄"></el-input-number>
 		</el-form-item>
 		<el-form-item label="出生日期" prop="date">
 			<el-date-picker v-model="info.date" type="date" placeholder="选择日期"></el-date-picker>
@@ -50,16 +24,9 @@
 		    <el-input v-model="info.email" placeholder="请填写email"></el-input>
 		</el-form-item>
 		<el-form-item label="照片" prop="photos">
-			<div style="display: flex;">
-				<span class="thumbnail" v-for="(item, index) in info.fileList" :key="index">
-					<img :src="item.url + '?imageMogr2/thumbnail/100x100'" @click="look(item.url)">
-					<i class="el-icon-circle-close" @click="deleImg(item.name)"></i>
-				</span>
-				<span v-if="uploading" class="thumbnail"><i class="el-icon-loading"></i>上传中...</span>
-			</div>
-		    <el-upload action="/api/pictures/upload" :before-upload="beforeUpload" :show-upload-list="showUploadList" :on-success="handlSuccess" :default-file-list="info.fileList">
-			  	<el-button size="small" type="primary">点击上传</el-button>
-			  	<div class="el-upload__tip" slot="tip">只能上传jpg/png/gif文件，且不超过8M</div>
+			<el-upload action="/api/pictures/upload" list-type="picture-card" :before-upload="beforeUpload" :on-preview="handlePictureCardPreview" :on-remove="handleRemove" :on-success="handlSuccess" :file-list="info.fileList">
+		    	<i class="el-icon-plus"></i>
+				<div class="el-upload__tip" slot="tip">只能上传jpg/png/gif文件，且不超过8M</div>
 			</el-upload>
 		</el-form-item>
 		<el-form-item label="手机号码" prop="phone">
@@ -96,7 +63,10 @@
 		    <el-button type="primary" @click="submit" :loading="loading">提交</el-button>
 		</el-form-item>
 	</el-form>
-</div>	
+	<el-dialog v-model="dialogVisible" size="tiny">
+	  <img width="100%" :src="dialogImageUrl" alt="">
+	</el-dialog>
+</div>
 </template>
 <script>
 export default{
@@ -104,7 +74,8 @@ export default{
 		return {
 			imagePrefix: 'http://ojnlldqnx.bkt.clouddn.com/',
 			uploading: false,
-			showUploadList: false,
+			dialogVisible: false,
+			loading: false,
 			loading: false,
 			info: null,
 			rules: {
@@ -115,7 +86,7 @@ export default{
 					 { required: true, message: '请选择性别', trigger: 'blur' }
 				],
 				age: [
-					 { required: true, message: '请填写年龄', trigger: 'blur' }
+					 { type: 'number', required: true, message: '请填写年龄', trigger: 'blur' }
 				],
 				address: [
 					 { required: true, message: '请填写居住地址', trigger: 'blur' }
@@ -124,7 +95,7 @@ export default{
 					 { type: 'date', required: true, message: '请选择出生日期', trigger: 'change' }
 				],
 				email: [
-					 { required: true, message: '请添加邮箱', trigger: 'blur' }
+					 { type: 'email', required: true, message: '请添加邮箱', trigger: 'blur' }
 				],
 				phone: [
 					 { required: true, message: '请填写手机号码', trigger: 'blur' }
@@ -160,12 +131,12 @@ export default{
 				if(res.data.data.photos != ''){
 					res.data.data.photos.split(',').forEach((item) => {
 						res.data.data.fileList.push({
-							name: item, 
+							name: item,
 							url: this.imagePrefix + item
 						})
 					})
 				}
-				this.info = res.data.data				
+				this.info = res.data.data
 			}else{
 				this.$message.error(res.data.msg);
 			}
@@ -175,16 +146,19 @@ export default{
 		look: function(url){
   			window.open(url);
   		},
-		deleImg: function(url){
-			console.log(url)
+		handleRemove: function(file, fileList){
 			this.info.fileList = this.info.fileList.filter((item) => {
-				return item.name != url;
+				return item.name != file.name;
 			})
 			var arr = this.info.photos.split(',').filter((item) => {
-				return item != url
+				return item != file.name
 			})
 			this.info.photos = arr.join(',');
 		},
+		handlePictureCardPreview(file) {
+	        this.dialogImageUrl = file.url;
+	        this.dialogVisible = true;
+	     },
 		beforeUpload: function(){
 			this.uploading = true;
 		},
@@ -257,5 +231,5 @@ export default{
 			})
 		}
 	}
-}	
+}
 </script>

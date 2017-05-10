@@ -3,8 +3,8 @@
 	<div><el-button type="primary" icon="plus" @click="go({name: 'member-add'})">添加纹绣师</el-button></div>
 	<br>
 	<el-table border :data="tableData" v-loading.body="loading" element-loading-text="拼命加载中" style="width: 100%">
-        <el-table-column prop="id" label="ID" width="100"></el-table-column>
-        <el-table-column label="编号" width="150">
+        <el-table-column prop="id" label="ID" width="50"></el-table-column>
+        <el-table-column label="编号" width="200">
         	<template scope="scope">
 		        <el-tag type='success' v-if="scope.row.number">{{scope.row.number}}</el-tag>
 		    </template>
@@ -12,10 +12,9 @@
         <el-table-column prop="name" label="姓名" width="100"></el-table-column>
         <el-table-column prop="sexName" label="性别" width="100"></el-table-column>
         <el-table-column prop="age" label="年龄" width="100"></el-table-column>
-        <el-table-column prop="date" label="出生日期" width="200"></el-table-column>
-        <el-table-column prop="email" label="电子邮箱" width="200"></el-table-column>
+        <el-table-column prop="date" label="出生日期"></el-table-column>
+        <el-table-column prop="email" label="电子邮箱"></el-table-column>
         <el-table-column prop="phone" label="手机号码" width="150"></el-table-column>
-        <el-table-column prop="address" label="居住地址"></el-table-column>
       	<el-table-column prop="status" width="100" label="状态" :filter-method="filter" :filters="[{ text: '待审核', value: 'REVIEW' }, { text: '已通过', value: 'ADOPTA' }, { text: '已拒绝', value: 'REFUSE' }]">
       		<template scope="scope">
 		        <el-tag v-if="scope.row.status === 'REVIEW'" type='warning' close-transition>{{scope.row.statusName}}</el-tag>
@@ -33,7 +32,7 @@
     <div style="padding: 20px;text-align: right;">
     	<el-pagination @current-change="handleCurrentChange" :current-page="page" :page-size="pageSize" layout="total, prev, pager, next" :total="total"></el-pagination>
     </div>
-</div>	
+</div>
 </template>
 <script>
 export default {
@@ -94,5 +93,5 @@ export default {
 			this.getList();
 		}
 	}
-}	
+}
 </script>

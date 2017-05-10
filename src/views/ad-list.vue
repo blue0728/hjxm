@@ -5,7 +5,7 @@
 	<el-table border :data="tableData" v-loading.body="loading" element-loading-text="拼命加载中" style="width: 100%">
         <el-table-column prop="id" label="ID" width="100"></el-table-column>
         <el-table-column prop="name" label="标题"></el-table-column>
-        <el-table-column prop="url" width="300" label="链接地址"></el-table-column>
+        <el-table-column prop="url" label="链接地址"></el-table-column>
         <el-table-column width="280" label="图片">
         	<template scope="scope">
       			<img :src="'http://ojnlldqnx.bkt.clouddn.com/' + scope.row.image + '?imageMogr2/thumbnail/200x100'" style="margin:10px;" width="200" height="100">
@@ -30,7 +30,7 @@
     <div style="padding: 20px;text-align: right;">
     	<el-pagination @current-change="handleCurrentChange" :current-page="page" :page-size="pageSize" layout="total, prev, pager, next" :total="total"></el-pagination>
     </div>
-</div>	
+</div>
 </template>
 <script>
 export default {
@@ -112,5 +112,5 @@ export default {
 			this.getList();
 		}
 	}
-}	
+}
 </script>

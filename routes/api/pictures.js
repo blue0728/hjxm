@@ -31,6 +31,31 @@ function formatNumber(n) {
 	return n[1] ? n : '0' + n
 }
 
+//获取token
+router.get('/token', function(req, res, next) {
+	//要上传的空间
+	var bucket = 'images';
+
+	//上传到七牛后保存的文件名
+	var key = null;
+
+	//构建上传策略函数
+	function uptoken(bucket) {
+		var putPolicy = new qiniu.rs.PutPolicy(bucket);
+		return putPolicy.token();
+	}
+
+	//生成上传 Token
+	var token = uptoken(bucket);
+
+	res.json({
+		status: 'success',
+		data: {
+			token: token
+		}
+	})
+})
+
 //普通上传
 router.post('/upload', function(req, res, next) {
 	var form = new formidable.IncomingForm();

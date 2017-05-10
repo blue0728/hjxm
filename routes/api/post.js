@@ -102,16 +102,6 @@ router.post('/detail', checkLogin, function(req, res, next) {
 	pool.getConnection(function(err, connection) {
 		connection.query(post.queryById, [param.id], function(err, result) {
 			if (result && result.length > 0) {
-				result[0].fileList = []
-				if (result[0].cover) {
-					result[0].cover.split(',').forEach((item) => {
-						result[0].fileList.push({
-							name: item,
-							url: 'http://ojnlldqnx.bkt.clouddn.com/' + item
-						})
-					})
-				}
-				result[0].photos = result[0].cover
 				res.json({
 					data: result[0],
 					status: 'success',
@@ -173,6 +163,7 @@ router.post('/add', checkLogin, function(req, res, next) {
 
 	pool.getConnection(function(err, connection) {
 		connection.query(post.insert, [param.title, param.content, new Date(), author, param.source, param.status, typeid, param.cover], function(err, result) {
+			console.log(err)
 			if (result) {
 				res.json({
 					status: 'success',
