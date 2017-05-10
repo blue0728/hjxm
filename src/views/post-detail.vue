@@ -101,25 +101,7 @@ export default{
 		}
 	},
 	mounted: function(){
-		this.editor = UE.getEditor('content', {
-          	UEDITOR_HOME_URL: '',
-          	serverUrl:'/api/pictures/upload2ue',
-          	autoHeight: false,
-          	initialFrameHeight: '250',
-          	toolbars: [[
-		        'fullscreen', 'source', '|', 'undo', 'redo', '|',
-		        'bold', 'italic', 'underline', 'fontborder', 'strikethrough', 'superscript', 'subscript', 'removeformat', 'formatmatch', 'autotypeset', 'blockquote', 'pasteplain', '|', 'forecolor', 'backcolor', 'insertorderedlist', 'insertunorderedlist', 'selectall', 'cleardoc', '|',
-		        'rowspacingtop', 'rowspacingbottom', 'lineheight', '|',
-		        'customstyle', 'paragraph', 'fontfamily', 'fontsize', '|',
-		        'directionalityltr', 'directionalityrtl', 'indent', '|',
-		        'justifyleft', 'justifycenter', 'justifyright', 'justifyjustify', '|', 'touppercase', 'tolowercase', '|',
-		        'link', 'unlink', 'anchor', '|', 'imagenone', 'imageleft', 'imageright', 'imagecenter', '|',
-		        'insertimage', 'emotion','template', '|',
-		        'horizontal', 'date', 'time', 'spechars', '|',
-		        'inserttable', 'deletetable', 'insertparagraphbeforetable', 'insertrow', 'deleterow', 'insertcol', 'deletecol', 'mergecells', 'mergeright', 'mergedown', 'splittocells', 'splittorows', 'splittocols', '|',
-		         'preview', 'searchreplace', 'drafts', 'help'
-		    ]]
-	    });
+		this.editor = UE.getEditor('content');
 	},
 	look: function(url){
 		window.open(url);
