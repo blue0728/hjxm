@@ -118,4 +118,10 @@ export default [{
 	component: (resolve) => {
 		require(['./views/pictures.vue'], resolve)
 	}
+}, {
+    path: '/system-log',
+    name: 'system-log',
+    component: (resolve) => {
+        require(['./views/system-log.vue'], resolve)
+    }
 }];

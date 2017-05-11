@@ -24,6 +24,7 @@
 	  	<el-submenu v-if="info" index="login" style="float: right;margin-right:30px;">
 		    <template slot="title">欢迎您，{{info.name}}</template>
 		    <el-menu-item v-if="info.level == 1" index="/user-list">用户管理</el-menu-item>
+			<el-menu-item v-if="info.level == 1" index="/system-log">系统日志</el-menu-item>
 		    <el-menu-item index="/edit-password">修改密码</el-menu-item>
 		    <el-menu-item index="/logout">退出</el-menu-item>
 		</el-submenu>

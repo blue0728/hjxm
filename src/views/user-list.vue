@@ -5,11 +5,11 @@
 	<el-table border :data="tableData" v-loading.body="loading" element-loading-text="拼命加载中" style="width: 100%">
         <el-table-column prop="id" label="ID" width="100"></el-table-column>
         <el-table-column prop="name" label="用户名"></el-table-column>
-        <el-table-column width="100" label="级别">
+        <el-table-column width="150" label="级别">
         	<template scope="scope">
       			<el-tag v-if="scope.row.level == 1" type="success">超级管理员</el-tag>
-      			<el-tag v-if="scope.row.level == 2" type="primary">操作员</el-tag>
-      			<el-tag v-if="scope.row.level == 3" type="warning">查看员</el-tag>
+      			<el-tag v-if="scope.row.level == 2" type="primary">管理员</el-tag>
+      			<el-tag v-if="scope.row.level == 3" type="warning">普通</el-tag>
       		</template>
         </el-table-column>
         <el-table-column prop="time" width="200" label="添加时间"></el-table-column>
