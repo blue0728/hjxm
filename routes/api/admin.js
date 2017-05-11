@@ -7,6 +7,7 @@ var log = require('../../conf/log.js')
 var router = express.Router();
 var pool = mysql.createPool(dbConfig.mysql);
 var checkLogin = require('../checkLogin.js')
+var log = require('log4js').getLogger("admin");
 
 //获取IP
 function getClientIp(req) {
@@ -54,6 +55,14 @@ router.post('/login', function(req, res, next) {
 		return;
 	}
     pool.getConnection(function(err, connection) {
+        if(err){
+            log.error(err);
+            res.json({
+                status: 'error',
+                msg: '异常'
+            });
+            return;
+        }
         var md5 = crypto.createHash('md5'),
             password = md5.update(param.password).digest('hex');
         connection.query(user.query, [param.name, password], function(err, result) {
@@ -72,12 +81,17 @@ router.post('/login', function(req, res, next) {
                     id: result[0].id,
                     level: result[0].level
                 };
-                connection.query(log.insterLogin, [result[0].id, new Date(), getClientIp(req)]) //写入登录日志
+                connection.query(log.insterLogin, [result[0].id, new Date(), getClientIp(req)], function (err, result) {//写入登录日志
+                    if(err){
+                        log.error(err);
+                    }
+                })
                 res.json({
                     status: 'success',
                     msg: '登录成功'
                 });
             } else {
+                log.error(err);
                 res.json({
                     status: 'error',
                     msg: '用户名/密码错误'
@@ -109,6 +123,16 @@ router.post('/list', checkLogin, function(req, res, next) {
 	}
 
 	pool.getConnection(function(err, connection) {
+
+        if(err){
+            log.error(err);
+            res.json({
+                status: 'error',
+                msg: '异常'
+            });
+            return;
+        }
+
 		var total = 0;
 		var page = (param.page - 1) * param.pageSize;
 		var pageSize = parseInt(param.pageSize)
@@ -133,6 +157,7 @@ router.post('/list', checkLogin, function(req, res, next) {
 								}
 							});
 						} else {
+                            log.error(err);
 							res.json({
 								status: 'error',
 								msg: '查询失败'
@@ -151,6 +176,7 @@ router.post('/list', checkLogin, function(req, res, next) {
 					})
 				}
 			} else {
+                log.error(err);
 				res.json({
 					status: 'error',
 					msg: '查询失败'
@@ -181,6 +207,14 @@ router.post('/add', checkLogin, function(req, res, next) {
 	}
 
 	pool.getConnection(function(err, connection) {
+        if(err){
+            log.error(err);
+            res.json({
+                status: 'error',
+                msg: '异常'
+            });
+            return;
+        }
 		var md5 = crypto.createHash('md5'),
 			password = md5.update(param.password).digest('hex');
 		var level = Number(req.session.user.level) + 1
@@ -201,6 +235,7 @@ router.post('/add', checkLogin, function(req, res, next) {
 					msg: '添加成功'
 				});
 			} else {
+                log.error(err);
 				res.json({
 					status: 'error',
 					msg: '添加失败'
@@ -238,6 +273,14 @@ router.post('/set-status', checkLogin, function(req, res, next) {
 	}
 
 	pool.getConnection(function(err, connection) {
+        if(err){
+            log.error(err);
+            res.json({
+                status: 'error',
+                msg: '异常'
+            });
+            return;
+        }
 		connection.query(user.updateStatus, [param.status, param.id], function(err, result) {
 			if (result) {
 				res.json({
@@ -245,6 +288,7 @@ router.post('/set-status', checkLogin, function(req, res, next) {
 					msg: '更新成功'
 				});
 			} else {
+                log.error(err);
 				res.json({
 					status: 'error',
 					msg: '查询失败'
@@ -274,6 +318,16 @@ router.post('/set-password', checkLogin, function(req, res, next) {
 	}
 
 	pool.getConnection(function(err, connection) {
+
+        if(err){
+            log.error(err);
+            res.json({
+                status: 'error',
+                msg: '异常'
+            });
+            return;
+        }
+
 		var md5 = crypto.createHash('md5'),
 			password = md5.update(param.password).digest('hex');
 
@@ -284,6 +338,7 @@ router.post('/set-password', checkLogin, function(req, res, next) {
 					msg: '更新成功'
 				});
 			} else {
+                log.error(err);
 				res.json({
 					status: 'error',
 					msg: '查询失败'
@@ -306,6 +361,16 @@ router.post('/edit-password', checkLogin, function(req, res, next) {
 	}
 
 	pool.getConnection(function(err, connection) {
+
+        if(err){
+            log.error(err);
+            res.json({
+                status: 'error',
+                msg: '异常'
+            });
+            return;
+        }
+
 		var password = crypto.createHash('md5').update(param.password).digest('hex'),
 			newPassword = crypto.createHash('md5').update(param.newPassword).digest('hex'),
 			name = req.session.user.name,
@@ -321,6 +386,7 @@ router.post('/edit-password', checkLogin, function(req, res, next) {
 							msg: '密码修改成功，请重新登录'
 						});
 					} else {
+                        log.error(err);
 						res.json({
 							status: 'error',
 							msg: '修改失败'
@@ -358,6 +424,14 @@ router.post('/log', checkLogin, function(req, res, next) {
 	}
 
 	pool.getConnection(function(err, connection) {
+        if(err){
+            log.error(err);
+            res.json({
+                status: 'error',
+                msg: '异常'
+            });
+            return;
+        }
 		var total = 0;
 		var page = (param.page - 1) * param.pageSize;
 		var pageSize = parseInt(param.pageSize)
@@ -381,6 +455,7 @@ router.post('/log', checkLogin, function(req, res, next) {
 								}
 							});
 						} else {
+                            log.error(err);
 							res.json({
 								status: 'error',
 								msg: '查询失败'
@@ -399,6 +474,7 @@ router.post('/log', checkLogin, function(req, res, next) {
 					})
 				}
 			} else {
+                log.error(err);
 				res.json({
 					status: 'error',
 					msg: '查询失败'

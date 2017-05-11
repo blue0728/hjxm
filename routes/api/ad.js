@@ -5,6 +5,7 @@ var ad = require('../../conf/ad.js')
 var router = express.Router();
 var pool = mysql.createPool(dbConfig.mysql);
 var checkLogin = require('../checkLogin.js');
+var log = require('log4js').getLogger("ad");
 
 //格式化时间
 function formatTime(date) {
@@ -40,7 +41,14 @@ router.post('/list', checkLogin, function(req, res, next) {
 		var total = 0;
 		var page = (param.page - 1) * param.pageSize;
 		var pageSize = parseInt(param.pageSize)
-
+        if(err){
+            log.error(err);
+            res.json({
+                status: 'error',
+                msg: '异常'
+            });
+            return;
+        }
 		connection.query(ad.countAll, function(err, result) {
 			if (result) {
 				total = result[0]['count(*)'];
@@ -61,6 +69,7 @@ router.post('/list', checkLogin, function(req, res, next) {
 								}
 							});
 						} else {
+                            log.error(err);
 							res.json({
 								status: 'error',
 								msg: '查询失败'
@@ -79,6 +88,7 @@ router.post('/list', checkLogin, function(req, res, next) {
 					})
 				}
 			} else {
+                log.error(err);
 				res.json({
 					status: 'error',
 					msg: '查询失败'
@@ -99,6 +109,14 @@ router.post('/detail', checkLogin, function(req, res, next) {
 		return;
 	}
 	pool.getConnection(function(err, connection) {
+        if(err){
+            log.error(err);
+            res.json({
+                status: 'error',
+                msg: '异常'
+            });
+            return;
+        }
 		connection.query(ad.queryById, [param.id], function(err, result) {
 			if (result && result.length == 1) {
 				res.json({
@@ -106,6 +124,7 @@ router.post('/detail', checkLogin, function(req, res, next) {
 					data: result[0]
 				});
 			} else {
+                log.error(err);
 				res.json({
 					status: 'error',
 					msg: '查询失败'
@@ -126,6 +145,14 @@ router.post('/add', checkLogin, function(req, res, next) {
 		return;
 	}
 	pool.getConnection(function(err, connection) {
+        if(err){
+            log.error(err);
+            res.json({
+                status: 'error',
+                msg: '异常'
+            });
+            return;
+        }
 		connection.query(ad.insert, [param.name, param.url, param.image, param.status, new Date()], function(err, result) {
 			if (result) {
 				res.json({
@@ -133,6 +160,7 @@ router.post('/add', checkLogin, function(req, res, next) {
 					msg: '添加成功'
 				});
 			} else {
+                log.error(err);
 				res.json({
 					status: 'error',
 					msg: '添加失败'
@@ -155,6 +183,14 @@ router.post('/dele', checkLogin, function(req, res, next) {
 	}
 
 	pool.getConnection(function(err, connection) {
+        if(err){
+            log.error(err);
+            res.json({
+                status: 'error',
+                msg: '异常'
+            });
+            return;
+        }
 		connection.query(ad.deleById, [param.id], function(err, result) {
 			if (result) {
 				res.json({
@@ -162,6 +198,7 @@ router.post('/dele', checkLogin, function(req, res, next) {
 					msg: '删除成功'
 				});
 			} else {
+                log.error(err);
 				res.json({
 					status: 'error',
 					msg: '删除失败'
@@ -183,6 +220,14 @@ router.post('/edit', checkLogin, function(req, res, next) {
 		return;
 	}
 	pool.getConnection(function(err, connection) {
+        if(err){
+            log.error(err);
+            res.json({
+                status: 'error',
+                msg: '异常'
+            });
+            return;
+        }
 		connection.query(ad.update, [param.name, param.url, param.image, param.status, new Date(), param.id], function(err, result) {
 			if (result) {
 				res.json({
@@ -190,6 +235,7 @@ router.post('/edit', checkLogin, function(req, res, next) {
 					msg: '更新成功'
 				});
 			} else {
+                log.error(err);
 				res.json({
 					status: 'error',
 					msg: '更新失败'
@@ -210,6 +256,14 @@ router.post('/set-status', checkLogin, function(req, res, next) {
 		return;
 	}
 	pool.getConnection(function(err, connection) {
+        if(err){
+            log.error(err);
+            res.json({
+                status: 'error',
+                msg: '异常'
+            });
+            return;
+        }
 		connection.query(ad.updateStatus, [param.status, param.id], function(err, result) {
 			if (result) {
 				res.json({
@@ -217,6 +271,7 @@ router.post('/set-status', checkLogin, function(req, res, next) {
 					msg: '更新成功'
 				});
 			} else {
+                log.error(err);
 				res.json({
 					status: 'error',
 					msg: '查询失败'

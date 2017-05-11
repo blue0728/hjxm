@@ -5,6 +5,7 @@ var message = require('../../conf/message.js')
 var router = express.Router();
 var pool = mysql.createPool(dbConfig.mysql);
 var checkLogin = require('../checkLogin.js');
+var log = require('log4js').getLogger("message");
 
 //格式化时间
 function formatTime(date) {
@@ -37,6 +38,16 @@ router.post('/list', checkLogin, function(req, res, next) {
 	}
 
 	pool.getConnection(function(err, connection) {
+
+        if(err){
+            log.error(err);
+            res.json({
+                status: 'error',
+                msg: '异常'
+            });
+            return;
+        }
+
 		var total = 0;
 		var page = (param.page - 1) * param.pageSize;
 		var pageSize = parseInt(param.pageSize)
@@ -61,6 +72,7 @@ router.post('/list', checkLogin, function(req, res, next) {
 								}
 							});
 						} else {
+                            log.error(err);
 							res.json({
 								status: 'error',
 								msg: '查询失败'
@@ -79,6 +91,7 @@ router.post('/list', checkLogin, function(req, res, next) {
 					})
 				}
 			} else {
+                log.error(err);
 				res.json({
 					status: 'error',
 					msg: '查询失败'
@@ -99,6 +112,14 @@ router.post('/set-status', checkLogin, function(req, res, next) {
 		return;
 	}
 	pool.getConnection(function(err, connection) {
+        if(err){
+            log.error(err);
+            res.json({
+                status: 'error',
+                msg: '异常'
+            });
+            return;
+        }
 		connection.query(message.updateStatus, [param.status, param.id], function(err, result) {
 			if (result) {
 				res.json({
@@ -106,6 +127,7 @@ router.post('/set-status', checkLogin, function(req, res, next) {
 					msg: '更新成功'
 				});
 			} else {
+                log.error(err);
 				res.json({
 					status: 'error',
 					msg: '查询失败'

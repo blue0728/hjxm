@@ -1,6 +1,7 @@
 var fs = require("fs")
 var express = require('express');
 var router = express.Router();
+var log = require('log4js').getLogger("index");
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -19,7 +20,7 @@ router.get('/admin', function (req, res, next) {
                 msg: '请重新编译代码',
                 src: ''
             });
-            console.log(err)
+            log.error(err);
             return
         }
         res.render('admin', {

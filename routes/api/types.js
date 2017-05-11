@@ -7,9 +7,18 @@ var post = require('../../conf/post.js')
 var router = express.Router();
 var pool = mysql.createPool(dbConfig.mysql);
 var checkLogin = require('../checkLogin.js');
+var log = require('log4js').getLogger("type");
 
 router.post('/list', checkLogin, function(req, res, next) {
 	pool.getConnection(function(err, connection) {
+        if(err){
+            log.error(err);
+            res.json({
+                status: 'error',
+                msg: '异常'
+            });
+            return;
+        }
 		connection.query(types.queryAll, function(err, result) {
 			if (result) {
 				res.json({
@@ -19,6 +28,7 @@ router.post('/list', checkLogin, function(req, res, next) {
 					}
 				});
 			} else {
+                log.error(err);
 				res.json({
 					status: 'error',
 					msg: '查询失败'
@@ -39,6 +49,14 @@ router.post('/add', checkLogin, function(req, res, next) {
 		return;
 	}
 	pool.getConnection(function(err, connection) {
+        if(err){
+            log.error(err);
+            res.json({
+                status: 'error',
+                msg: '异常'
+            });
+            return;
+        }
 		connection.query(types.insert, [param.name], function(err, result) {
 			//判断重名
 			if (err && err.errno == '1062') {
@@ -54,6 +72,7 @@ router.post('/add', checkLogin, function(req, res, next) {
 					msg: '添加成功'
 				});
 			} else {
+                log.error(err);
 				res.json({
 					status: 'error',
 					msg: '添加失败'
@@ -74,6 +93,14 @@ router.post('/edit', checkLogin, function(req, res, next) {
 		return;
 	}
 	pool.getConnection(function(err, connection) {
+        if(err){
+            log.error(err);
+            res.json({
+                status: 'error',
+                msg: '异常'
+            });
+            return;
+        }
 		connection.query(types.update, [param.name, param.id], function(err, result) {
 			//判断重名
 			if (err && err.errno == '1062') {
@@ -89,6 +116,7 @@ router.post('/edit', checkLogin, function(req, res, next) {
 					msg: '修改成功'
 				});
 			} else {
+                log.error(err);
 				res.json({
 					status: 'error',
 					msg: '修改失败'
@@ -110,6 +138,14 @@ router.post('/dele', checkLogin, function(req, res, next) {
 	}
 
 	pool.getConnection(function(err, connection) {
+        if(err){
+            log.error(err);
+            res.json({
+                status: 'error',
+                msg: '异常'
+            });
+            return;
+        }
 		connection.query(post.queryLike, ['%' + param.id + ',%'], function(err, result) {
 			if (result) {
 				if (result.length > 0) {
@@ -125,6 +161,7 @@ router.post('/dele', checkLogin, function(req, res, next) {
 								msg: '删除成功'
 							});
 						} else {
+                            log.error(err);
 							res.json({
 								status: 'error',
 								msg: '删除失败'
@@ -133,6 +170,7 @@ router.post('/dele', checkLogin, function(req, res, next) {
 					})
 				}
 			} else {
+                log.error(err);
 				res.json({
 					status: 'error',
 					msg: '查询失败'

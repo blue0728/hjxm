@@ -7,6 +7,7 @@ var pictures = require('../../conf/pictures.js')
 var checkLogin = require('../checkLogin.js')
 var formidable = require('formidable');
 var pool = mysql.createPool(dbConfig.mysql);
+var log = require('log4js').getLogger("pictures");
 
 //七牛 key
 qiniu.conf.ACCESS_KEY = 'AmJ7iOGbO1SERXursngARi3Kdanr2OR8Cboohi51';
@@ -101,6 +102,7 @@ router.post('/dele', checkLogin, function(req, res, next) {
 							msg: '删除成功'
 						});
 					} else {
+                        log.error(err);
 						res.json({
 							status: 'error',
 							msg: '本地删除失败，七牛云已经成功删除'
@@ -110,6 +112,7 @@ router.post('/dele', checkLogin, function(req, res, next) {
 				})
 			})
 		} else {
+            log.error(err);
 			res.json({
 				status: 'error',
 				msg: '删除失败'
@@ -130,6 +133,14 @@ router.post('/list', checkLogin, function(req, res, next) {
 	}
 
 	pool.getConnection(function(err, connection) {
+        if(err){
+            log.error(err);
+            res.json({
+                status: 'error',
+                msg: '异常'
+            });
+            return;
+        }
 		var total = 0;
 		var page = (param.page - 1) * param.pageSize;
 		var pageSize = parseInt(param.pageSize)
@@ -153,6 +164,7 @@ router.post('/list', checkLogin, function(req, res, next) {
 								}
 							});
 						} else {
+                            log.error(err);
 							res.json({
 								status: 'error',
 								msg: '查询失败'
@@ -171,6 +183,7 @@ router.post('/list', checkLogin, function(req, res, next) {
 					})
 				}
 			} else {
+                log.error(err);
 				res.json({
 					status: 'error',
 					msg: '查询失败'
