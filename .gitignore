@@ -4,8 +4,3 @@ npm-debug.log
 /dist/
 .idea/
 log/
-node_modules/
-public/css/
-public/fonts/
-public/images/
-src/assets/
