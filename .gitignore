@@ -3,7 +3,6 @@
 npm-debug.log
 /dist/
 .idea/
-conf/log4js.json
 log/
 node_modules/
 public/css/
